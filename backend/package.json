@@ -1,0 +1,26 @@
+{
+  "name": "esoccer-data",
+  "version": "1.0.0",
+  "description": "",
+  "main": "data.js",
+  "scripts": {
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\""
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "danfojs-node": "^1.2.0",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "highcharts-export-server": "^5.0.0",
+    "loadsh": "^0.0.4",
+    "mongoose": "^8.16.5",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2"
+  }
+}

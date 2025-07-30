@@ -1,0 +1,34 @@
+// db.js
+const mongoose = require('mongoose');
+require('dotenv').config(); // Load environment variables
+
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.MONGO_URL, {
+      // Add other options as needed, e.g., tls: true for SSL/TLS
+    });
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    process.exit(1); // Exit process with failure
+  }
+};
+
+const disconnectDB = async () => {
+  try {
+    await mongoose.disconnect();
+    console.log('MongoDB disconnected');
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+  }
+};
+
+// Handle graceful shutdown
+process.on('SIGINT', async () => {
+  console.log('Received SIGINT. Closing MongoDB connection...');
+  await mongoose.disconnect();
+  console.log('MongoDB connection closed.');
+  process.exit(0);
+});
+
+module.exports = { connectDB, disconnectDB };
