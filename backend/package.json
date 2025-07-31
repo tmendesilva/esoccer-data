@@ -2,7 +2,8 @@
   "name": "esoccer-data",
   "version": "1.0.0",
   "description": "",
-  "main": "data.js",
+  "main": "server.js",
+  "type": "module",
   "scripts": {
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\""
   },

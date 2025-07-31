@@ -1,6 +1,5 @@
 // db.js
-const mongoose = require('mongoose');
-require('dotenv').config(); // Load environment variables
+import mongoose from 'mongoose';
 
 const connectDB = async () => {
   try {
@@ -31,4 +30,4 @@ process.on('SIGINT', async () => {
   process.exit(0);
 });
 
-module.exports = { connectDB, disconnectDB };
+export { connectDB, disconnectDB };

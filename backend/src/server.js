@@ -1,13 +1,14 @@
-const { fetchData } = require('./data');
-const { connectDB, disconnectDB } = require('../config/db');
-require('dotenv').config(); // Load environment variables
+import cors from 'cors';
+import dotenv from 'dotenv';
+import express from 'express';
+import { connectDB, disconnectDB } from '../config/db.js';
+import { fetchData } from './data.js';
+import { updateMatches } from './matches.js';
+import { updateTournaments } from './tournaments.js';
 
-const express = require('express');
-const cors = require('cors');
-const { updateTournaments } = require('./tournaments');
-const { updateMatches } = require('./matches');
+dotenv.config();
+
 const app = express();
-
 app.use(function setCommonHeaders(req, res, next) {
   res.set('Access-Control-Allow-Private-Network', 'true');
   next();
