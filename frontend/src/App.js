@@ -17,6 +17,7 @@ export default function App() {
   ]);
 
   async function handlePutRequest(entity) {
+    setIsLoading(true);
     await axios
       .put(`${process.env.REACT_APP_NODE_URL}/update-${entity}`, {})
       .then(() => {
@@ -26,6 +27,7 @@ export default function App() {
         console.error("Error during PUT request:", error);
       });
   }
+
   const fetchData = useCallback(async () => {
     try {
       const res = await axios.get(`${process.env.REACT_APP_NODE_URL}/matches`, {

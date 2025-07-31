@@ -24,7 +24,7 @@ async function fetchData(params) {
           $gte: params.dateFrom,
           $lte: params.dateTo,
         },
-        status_id: [2, 3],
+        // status_id: [2, 3],
       },
       {
         _id: 0,

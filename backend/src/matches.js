@@ -2,9 +2,8 @@ import { addDays, subDays } from 'date-fns';
 import Match from './models/Match.js';
 import Tournament from './models/Tournament.js';
 
-const date = new Date();
-const matchDateYesterday = subDays(date, { days: 1 });
-const matchDateTomorrow = addDays(date, { days: 1 });
+const matchDateYesterday = subDays(new Date(), 1);
+const matchDateTomorrow = addDays(new Date(), 1);
 
 async function updateMatches() {
   try {
