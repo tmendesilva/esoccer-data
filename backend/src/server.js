@@ -2,7 +2,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 import { connectDB, disconnectDB } from '../config/db.js';
-import { fetchData, fetchFilters } from './data.js';
+import { fecthPlayersFilter, fetchData, fetchLocationsFilter } from './data.js';
 import { updateMatches } from './matches.js';
 import { updateTournaments } from './tournaments.js';
 
@@ -48,7 +48,18 @@ async function startServer() {
     app.get('/matches/filters', async (req, res) => {
       try {
         const params = req.query;
-        const data = await fetchFilters(params);
+        const data = await fetchLocationsFilter(params);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(data));
+      } catch (err) {
+        errorHandling(err);
+      }
+    });
+
+    app.get('/matches/filters/players', async (req, res) => {
+      try {
+        const params = req.query;
+        const data = await fecthPlayersFilter(params);
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(data));
       } catch (err) {

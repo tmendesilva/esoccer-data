@@ -2,7 +2,7 @@ import { addDays, formatISO, subDays } from 'date-fns';
 import Tournament from './models/Tournament.js';
 
 async function updateTournaments() {
-  const url = buildURLQuery('https://football.esportsbattle.com/api/tournaments', {
+  const url = buildURLQuery(`${$process.env.ESOCCER_API_URL}/tournaments`, {
     page: 1,
     dateFrom: formatISO(subDays(new Date(), 1)),
     dateTo: formatISO(addDays(new Date(), 1)),

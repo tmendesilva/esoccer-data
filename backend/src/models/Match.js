@@ -7,6 +7,10 @@ const MatchSchema = new Schema({
   status_id: Number,
   tournament: Object,
   console: Object,
+  location: {
+    id: Number,
+    name: String,
+  },
   participant1: {
     nickname: String,
     score: Number,

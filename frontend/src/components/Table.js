@@ -5,12 +5,12 @@ export default function Table({ data }) {
   const columnArr = [
     "id",
     "date",
-    "location_name",
+    "location",
     "status_id",
-    "participant1_nickname",
-    "participant1_score",
-    "participant2_nickname",
-    "participant2_score",
+    "player1",
+    "player1_score",
+    "player2",
+    "player2_score",
     "scoreTotal",
   ];
 

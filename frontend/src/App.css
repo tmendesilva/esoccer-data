@@ -20,4 +20,13 @@
   padding: 4px;
   width: 250px;
   font-size: 14px;
+
+  .react-daterange-picker__wrapper {
+    background-color: hsl(0, 0%, 95%);
+    color: hsl(0, 0%, 20%);
+
+    .react-daterange-picker__inputGroup {
+      text-align: center;
+    }
+  }
 }

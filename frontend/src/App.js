@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import "react-calendar/dist/Calendar.css";
 import "./App.css";
 import Charts from "./components/Charts";
-import FilterLocation from "./components/Filters.js";
+import { LocationFilter, PlayerFilter } from "./components/Filters";
 import Table from "./components/Table";
 
 export default function App() {
@@ -13,11 +13,14 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true); // State for loading status
   const [error, setError] = useState(null); // State for error handling
 
+  // Filters
   const [dateRange, onChangeDateRange] = useState([
     new Date(new Date().setHours(0, 0, 0, 0)),
     new Date(),
   ]);
-  const [location, setLocation] = useState(""); // State for error handling
+  const [location, setLocation] = useState("");
+  const [player1, setPlayer1] = useState("");
+  const [player2, setPlayer2] = useState("");
 
   async function handlePutRequest(entity) {
     setIsLoading(true);
@@ -38,6 +41,8 @@ export default function App() {
           dateFrom: dateRange[0],
           dateTo: dateRange[1],
           location: location?.value,
+          player1: player1?.value,
+          player2: player2?.value,
         },
       });
       setData(res.data);
@@ -46,7 +51,7 @@ export default function App() {
     } finally {
       setIsLoading(false);
     }
-  }, [dateRange, setData, setError, setIsLoading, location]);
+  }, [dateRange, setData, setError, setIsLoading, location, player1, player2]);
 
   useEffect(() => {
     fetchData();
@@ -77,10 +82,22 @@ export default function App() {
           required
           className="DateRangePicker"
         />
-        <FilterLocation
+        <LocationFilter
           dateRange={dateRange}
           location={location}
           setLocation={setLocation}
+        />
+        <PlayerFilter
+          dateRange={dateRange}
+          player={player1}
+          setPlayer={setPlayer1}
+          location={location}
+        />
+        <PlayerFilter
+          dateRange={dateRange}
+          player={player2}
+          setPlayer={setPlayer2}
+          location={location}
         />
       </div>
       <Table data={data || []} />

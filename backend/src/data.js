@@ -1,6 +1,7 @@
 import { addMinutes, format } from 'date-fns';
+import lodash from 'lodash';
 import Match from './models/Match.js';
-import Tournament from './models/Tournament.js';
+const { uniq } = lodash;
 
 const flattenObject = (obj, prefix = '', result = {}) => {
   for (const key in obj) {
@@ -32,9 +33,6 @@ async function fetchData(params) {
                 $lte: addMinutes(params.dateTo, 16), // add 20 minutes
               },
             },
-            {
-              status_id: [2, 3],
-            },
           ],
         },
       ],
@@ -42,24 +40,37 @@ async function fetchData(params) {
 
     if (params.location) {
       filters.$and.push({
-        location: params.location && parseInt(params.location),
+        'location.id': parseInt(params.location),
+      });
+    }
+
+    if (params.player1) {
+      filters.$and.push({
+        $or: [
+          {
+            'participant1.nickname': params.player1,
+          },
+          {
+            'participant2.nickname': params.player1,
+          },
+        ],
+      });
+    }
+
+    if (params.player2) {
+      filters.$and.push({
+        $or: [
+          {
+            'participant1.nickname': params.player2,
+          },
+          {
+            'participant2.nickname': params.player2,
+          },
+        ],
       });
     }
 
     const matches = await Match.aggregate([
-      {
-        $lookup: {
-          from: 'tournaments', // The foreign collection to join with
-          localField: 'tournament.id', // Field from the input documents (Post)
-          foreignField: 'id', // Field from the documents of the "from" collection (User)
-          as: 'tournaments', // The name of the new array field to add to the input documents
-        },
-      },
-      {
-        $addFields: {
-          location: { $first: '$tournaments.location.id' },
-        },
-      },
       {
         $match: filters,
       },
@@ -69,7 +80,6 @@ async function fetchData(params) {
         },
       },
     ]);
-    console.log(matches[0]);
     return matches.map((match) => {
       return {
         id: match.id,
@@ -77,12 +87,12 @@ async function fetchData(params) {
           timeZone: 'America/Sao_Paulo',
         }),
         status_id: match.status_id,
-        location: match.tournaments[0].location.id,
-        location_name: match.tournaments[0].location.token,
-        participant1_nickname: match.participant1.nickname,
-        participant2_nickname: match.participant2.nickname,
-        participant1_score: match.participant1.score,
-        participant2_score: match.participant2.score,
+        location_id: match.location?.id || '',
+        location: match.location?.name || '',
+        player1: match.participant1.nickname,
+        player1_score: match.participant1.score,
+        player2: match.participant2.nickname,
+        player2_score: match.participant2.score,
         scoreTotal: match.participant1.score + match.participant2.score,
       };
     });
@@ -91,10 +101,10 @@ async function fetchData(params) {
   }
 }
 
-const fetchFilters = async (params) => {
+const fetchLocationsFilter = async (params) => {
   try {
-    const locations = await Tournament.distinct('location', {
-      start_date: {
+    const locations = await Match.distinct('location', {
+      date: {
         $gte: new Date(params.dateFrom),
         $lte: addMinutes(params.dateTo, 16), // add 16 minutes
       },
@@ -107,4 +117,25 @@ const fetchFilters = async (params) => {
   }
 };
 
-export { fetchData, fetchFilters };
+const fecthPlayersFilter = async (params) => {
+  try {
+    let filters = {
+      date: {
+        $gte: new Date(params.dateFrom),
+        $lte: addMinutes(params.dateTo, 16), // add 16 minutes
+      },
+    };
+    if (params.location) {
+      filters['location.id'] = params.location;
+    }
+    const player1 = await Match.distinct('participant1.nickname', filters);
+    const player2 = await Match.distinct('participant2.nickname', filters);
+    return {
+      players: uniq([...player1, ...player2]),
+    };
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};
+
+export { fecthPlayersFilter, fetchData, fetchLocationsFilter };

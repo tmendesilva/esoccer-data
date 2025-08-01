@@ -1,17 +1,31 @@
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import { map } from "lodash";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function Charts({ data }) {
-  let series = [];
-  data.forEach((item) => {
-    series.push({
-      y: item.scoreTotal,
-      ...item,
-    });
-  });
+  const chartRef = useRef();
 
-  const options = {
+  const setSeriesData = useCallback(() => {
+    let seriesData = [];
+    data.forEach((item) => {
+      seriesData.push({
+        y: item.scoreTotal,
+        ...item,
+      });
+    });
+    setChartOptions({
+      series: {
+        data: seriesData,
+      },
+    });
+  }, [data]);
+
+  useEffect(() => {
+    setSeriesData();
+  }, [setSeriesData]);
+
+  const [chartOptions, setChartOptions] = useState({
     title: {
       text: "Total Goals timeline",
     },
@@ -24,7 +38,7 @@ export default function Charts({ data }) {
     series: [
       {
         name: "Total Goals",
-        data: series,
+        data: null,
         type: "area",
         lineWidth: 1,
         animate: true,
@@ -56,15 +70,15 @@ export default function Charts({ data }) {
       borderWidth: 1,
       shadow: true,
     },
-  };
+  });
 
   return (
     <div id="container" className="highcharts-dark">
-      {data ? (
-        <HighchartsReact highcharts={Highcharts} options={options} />
-      ) : (
-        <div>No data available.</div>
-      )}
+      <HighchartsReact
+        highcharts={Highcharts}
+        options={chartOptions}
+        ref={chartRef}
+      />
     </div>
   );
 }

@@ -21,11 +21,22 @@ async function updateMatches() {
 
     let bulkOperations = [];
     const promises = tournaments.map(async (tourn) => {
-      const url = `https://football.esportsbattle.com/api/tournaments/${tourn.id}/matches`;
+      const url = `${process.env.ESOCCER_API_URL}/tournaments/${tourn.id}/matches`;
       await fetch(url)
         .then((res) => res.json())
         .then((matches) => {
-          bulkOperations = makeBulkOperations(bulkOperations, matches);
+          bulkOperations = makeBulkOperations(
+            bulkOperations,
+            matches.map((match) => {
+              return {
+                ...match,
+                location: {
+                  id: tourn.location.id,
+                  name: tourn.location.token,
+                },
+              };
+            }),
+          );
         })
         .catch((err) => {
           console.error('Error:', err);
