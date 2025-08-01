@@ -5,6 +5,7 @@ export default function Table({ data }) {
   const columnArr = [
     "id",
     "date",
+    "location_name",
     "status_id",
     "participant1_nickname",
     "participant1_score",

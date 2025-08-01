@@ -6,3 +6,18 @@
   margin: 0 auto;
   padding: 2rem;
 }
+
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.DateRangePicker {
+  border: 1px solid #ddd;
+  border-radius: 2px;
+  padding: 4px;
+  width: 250px;
+  font-size: 14px;
+}

@@ -12,7 +12,12 @@ async function updateMatches() {
         $gte: matchDateYesterday,
         $lte: matchDateTomorrow,
       },
+      // status_id: {
+      //   $lte: 3, // 2: not started, 3: in progress, 4: finished
+      // },
     });
+
+    console.info('Tournament length:', tournaments.length);
 
     let bulkOperations = [];
     const promises = tournaments.map(async (tourn) => {

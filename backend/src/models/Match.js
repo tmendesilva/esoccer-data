@@ -7,8 +7,14 @@ const MatchSchema = new Schema({
   status_id: Number,
   tournament: Object,
   console: Object,
-  participant1: Object,
-  participant2: Object,
+  participant1: {
+    nickname: String,
+    score: Number,
+  },
+  participant2: {
+    nickname: String,
+    score: Number,
+  },
 });
 
 const Match = mongoose.model('Match', MatchSchema);

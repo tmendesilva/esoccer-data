@@ -1,12 +1,12 @@
-import { addDays, subDays } from 'date-fns';
+import { addDays, formatISO, subDays } from 'date-fns';
 import Tournament from './models/Tournament.js';
 
 async function updateTournaments() {
   const url = buildURLQuery('https://football.esportsbattle.com/api/tournaments', {
     page: 1,
-    dateFrom: subDays(new Date(), 1),
-    dateTo: addDays(new Date(), 1),
-    location: 2,
+    dateFrom: formatISO(subDays(new Date(), 1)),
+    dateTo: formatISO(addDays(new Date(), 1)),
+    location: [1, 2],
   });
   console.info('Tournament url:', url);
   return await fetch(url)
@@ -22,6 +22,10 @@ async function updateTournaments() {
       };
     })
     .catch((err) => console.error('Error:', err));
+}
+
+async function getTournamentLocations() {
+  await Tournament.distinct('location');
 }
 
 async function upsertTournaments(tournaments) {
@@ -43,7 +47,12 @@ const buildURLQuery = (url, params) =>
   url +
   '?' +
   Object.entries(params)
-    .map((p) => p.map(encodeURIComponent).join('='))
+    .map((p) => {
+      if (Array.isArray(p[1])) {
+        return p[1].map((v) => `${p[0]}=${v}`).join('&');
+      }
+      return `${p[0]}=${p[1]}`;
+    })
     .join('&');
 
-export { updateTournaments };
+export { getTournamentLocations, updateTournaments };

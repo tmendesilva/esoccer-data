@@ -2,7 +2,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 import { connectDB, disconnectDB } from '../config/db.js';
-import { fetchData } from './data.js';
+import { fetchData, fetchFilters } from './data.js';
 import { updateMatches } from './matches.js';
 import { updateTournaments } from './tournaments.js';
 
@@ -23,6 +23,12 @@ const corsOptions = {
 
 app.use(cors(corsOptions)); // Apply custom CORS options globally
 
+const errorHandling = (err) => {
+  console.error('Error:', err);
+  res.writeHead(500, { 'Content-Type': 'text/plain' });
+  res.end('Internal Server Error');
+};
+
 async function startServer() {
   try {
     await connectDB();
@@ -35,9 +41,18 @@ async function startServer() {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(data));
       } catch (err) {
-        console.error('Database operation error:', err);
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.end('Internal Server Error');
+        errorHandling(err);
+      }
+    });
+
+    app.get('/matches/filters', async (req, res) => {
+      try {
+        const params = req.query;
+        const data = await fetchFilters(params);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(data));
+      } catch (err) {
+        errorHandling(err);
       }
     });
 
@@ -47,9 +62,7 @@ async function startServer() {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(tournaments));
       } catch (err) {
-        console.error('Database operation error:', err);
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.end('Internal Server Error');
+        errorHandling(err);
       }
     });
 
@@ -59,9 +72,7 @@ async function startServer() {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(matches));
       } catch (err) {
-        console.error('Database operation error:', err);
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.end('Internal Server Error');
+        errorHandling(err);
       }
     });
 
@@ -78,6 +89,7 @@ async function startServer() {
     process.on('SIGINT', async () => {
       console.log('Server shutting down...');
       await disconnectDB();
+      app.close();
       process.exit(0);
     });
   } catch (err) {

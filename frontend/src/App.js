@@ -5,16 +5,19 @@ import { useCallback, useEffect, useState } from "react";
 import "react-calendar/dist/Calendar.css";
 import "./App.css";
 import Charts from "./components/Charts";
+import FilterLocation from "./components/Filters.js";
 import Table from "./components/Table";
 
 export default function App() {
   const [data, setData] = useState(null); // State to store fetched data
   const [isLoading, setIsLoading] = useState(true); // State for loading status
   const [error, setError] = useState(null); // State for error handling
+
   const [dateRange, onChangeDateRange] = useState([
     new Date(new Date().setHours(0, 0, 0, 0)),
     new Date(),
   ]);
+  const [location, setLocation] = useState(""); // State for error handling
 
   async function handlePutRequest(entity) {
     setIsLoading(true);
@@ -34,6 +37,7 @@ export default function App() {
         params: {
           dateFrom: dateRange[0],
           dateTo: dateRange[1],
+          location: location?.value,
         },
       });
       setData(res.data);
@@ -42,7 +46,7 @@ export default function App() {
     } finally {
       setIsLoading(false);
     }
-  }, [dateRange, setData, setError, setIsLoading]);
+  }, [dateRange, setData, setError, setIsLoading, location]);
 
   useEffect(() => {
     fetchData();
@@ -56,11 +60,9 @@ export default function App() {
     return <div>Error: {error.message}</div>;
   }
 
-  console.log(dateRange);
-
   return (
     <div className="App">
-      <h1>Esoccer Data:</h1>
+      <h2>Esoccer Data:</h2>
       <button onClick={() => handlePutRequest("tournaments")}>
         Update Tournaments
       </button>{" "}
@@ -68,10 +70,21 @@ export default function App() {
         Update Matches
       </button>
       <div className="filters">
-        <DateRangePicker onChange={onChangeDateRange} value={dateRange} />
+        <DateRangePicker
+          onChange={onChangeDateRange}
+          value={dateRange}
+          clearIcon={null}
+          required
+          className="DateRangePicker"
+        />
+        <FilterLocation
+          dateRange={dateRange}
+          location={location}
+          setLocation={setLocation}
+        />
       </div>
-      <Table data={data} />
-      <Charts data={data} />
+      <Table data={data || []} />
+      <Charts data={data || []} />
     </div>
   );
 }

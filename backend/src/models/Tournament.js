@@ -2,7 +2,7 @@ import { mongoose } from 'mongoose';
 const { Schema } = mongoose;
 
 const TournamentSchema = new Schema({
-  id: String,
+  id: Number,
   token: String,
   token_international: String,
   marker: String,
