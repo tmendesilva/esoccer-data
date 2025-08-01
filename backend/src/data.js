@@ -26,14 +26,8 @@ async function fetchData(params) {
         {
           date: {
             $gte: new Date(params.dateFrom),
+            $lte: new Date(params.dateTo),
           },
-          $or: [
-            {
-              date: {
-                $lte: addMinutes(params.dateTo, 16), // add 20 minutes
-              },
-            },
-          ],
         },
       ],
     };
@@ -41,6 +35,14 @@ async function fetchData(params) {
     if (params.location) {
       filters.$and.push({
         'location.id': parseInt(params.location),
+      });
+    }
+
+    if (params['status[]']) {
+      filters.$and.push({
+        status_id: {
+          $in: params['status[]'].map((s) => Number(s)),
+        },
       });
     }
 

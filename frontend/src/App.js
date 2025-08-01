@@ -5,7 +5,12 @@ import { useCallback, useEffect, useState } from "react";
 import "react-calendar/dist/Calendar.css";
 import "./App.css";
 import Charts from "./components/Charts";
-import { LocationFilter, PlayerFilter } from "./components/Filters";
+import {
+  LocationFilter,
+  PlayerFilter,
+  StatusFilter,
+  statusOptions,
+} from "./components/Filters";
 import Table from "./components/Table";
 
 export default function App() {
@@ -15,10 +20,13 @@ export default function App() {
 
   // Filters
   const [dateRange, onChangeDateRange] = useState([
-    new Date(new Date().setHours(0, 0, 0, 0)),
-    new Date(),
+    new Date(new Date().setHours(0, 0)),
+    new Date(new Date().setHours(23, 59)),
   ]);
   const [location, setLocation] = useState("");
+  const [status, setStatus] = useState(
+    statusOptions().filter((o) => o.value !== "1")
+  );
   const [player1, setPlayer1] = useState("");
   const [player2, setPlayer2] = useState("");
 
@@ -43,6 +51,7 @@ export default function App() {
           location: location?.value,
           player1: player1?.value,
           player2: player2?.value,
+          status: status.map((s) => s.value),
         },
       });
       setData(res.data);
@@ -51,7 +60,16 @@ export default function App() {
     } finally {
       setIsLoading(false);
     }
-  }, [dateRange, setData, setError, setIsLoading, location, player1, player2]);
+  }, [
+    dateRange,
+    setData,
+    setError,
+    setIsLoading,
+    location,
+    player1,
+    player2,
+    status,
+  ]);
 
   useEffect(() => {
     fetchData();
@@ -99,6 +117,7 @@ export default function App() {
           setPlayer={setPlayer2}
           location={location}
         />
+        <StatusFilter status={status} setStatus={setStatus} />
       </div>
       <Table data={data || []} />
       <Charts data={data || []} />

@@ -1,4 +1,3 @@
-// db.js
 import mongoose from 'mongoose';
 
 const connectDB = async () => {
@@ -7,7 +6,7 @@ const connectDB = async () => {
       // Add other options as needed, e.g., tls: true for SSL/TLS
     });
     // Enable Mongoose debug mode
-    mongoose.set('debug', true);
+    mongoose.set('debug', process.env.ENV === 'dev');
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error(`Error: ${error.message}`);

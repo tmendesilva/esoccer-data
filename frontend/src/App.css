@@ -30,3 +30,18 @@
     }
   }
 }
+
+.dataTable {
+  td[class^="player"] {
+    color: hsl(0, 0%, 20%);
+  }
+  td.win {
+    background-color: lightgreen;
+  }
+  td.lose {
+    background-color: lightcoral;
+  }
+  td.draw {
+    background-color: lightyellow;
+  }
+}

@@ -2,15 +2,12 @@ import { addDays, subDays } from 'date-fns';
 import Match from './models/Match.js';
 import Tournament from './models/Tournament.js';
 
-const matchDateYesterday = subDays(new Date(), 1);
-const matchDateTomorrow = addDays(new Date(), 1);
-
 async function updateMatches() {
   try {
     const tournaments = await Tournament.find({
       start_date: {
-        $gte: matchDateYesterday,
-        $lte: matchDateTomorrow,
+        $gte: subDays(new Date(), 1),
+        $lte: addDays(new Date(), 1),
       },
       // status_id: {
       //   $lte: 3, // 2: not started, 3: in progress, 4: finished

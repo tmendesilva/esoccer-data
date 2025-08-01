@@ -43,6 +43,12 @@ function LocationFilter({ dateRange, location, setLocation }) {
         onChange={handleChange}
         placeholder="Select location"
         isClearable // Allows clearing the selection
+        styles={{
+          option: (baseStyles, state) => ({
+            ...baseStyles,
+            color: "#555",
+          }),
+        }}
       />
     </div>
   );
@@ -90,9 +96,48 @@ function PlayerFilter({ dateRange, player, setPlayer, location }) {
         onChange={handleChange}
         placeholder="Select player"
         isClearable // Allows clearing the selection
+        styles={{
+          option: (baseStyles, state) => ({
+            ...baseStyles,
+            color: "#555",
+          }),
+        }}
       />
     </div>
   );
 }
 
-export { LocationFilter, PlayerFilter };
+const statusOptions = () => {
+  return [
+    { value: "1", label: "Scheduled" },
+    { value: "2", label: "Playing" },
+    { value: "3", label: "Finished" },
+  ];
+};
+
+function StatusFilter({ status, setStatus }) {
+  const handleChange = (option) => {
+    setStatus(option);
+  };
+
+  return (
+    <div>
+      <Select
+        options={statusOptions()}
+        value={status}
+        onChange={handleChange}
+        placeholder="Select status"
+        isClearable
+        isMulti
+        styles={{
+          option: (baseStyles, state) => ({
+            ...baseStyles,
+            color: "#555",
+          }),
+        }}
+      />
+    </div>
+  );
+}
+
+export { LocationFilter, PlayerFilter, StatusFilter, statusOptions };

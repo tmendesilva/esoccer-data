@@ -1,9 +1,9 @@
 import { addDays, formatISO, subDays } from 'date-fns';
 import Tournament from './models/Tournament.js';
 
-async function updateTournaments() {
-  const url = buildURLQuery(`${$process.env.ESOCCER_API_URL}/tournaments`, {
-    page: 1,
+async function updateTournaments(page = 1) {
+  const url = buildURLQuery(`${process.env.ESOCCER_API_URL}/tournaments`, {
+    page: page,
     dateFrom: formatISO(subDays(new Date(), 1)),
     dateTo: formatISO(addDays(new Date(), 1)),
     location: [1, 2],
@@ -13,8 +13,12 @@ async function updateTournaments() {
     .then((res) => res.json())
     .then(async (json) => {
       console.info('Tournament length:', json.tournaments.length);
+      console.info('Tournament totalPages:', json.totalPages);
       const result = await upsertTournaments(json.tournaments);
       console.log('Bulk upsert result:', result);
+      if (json.totalPages > page) {
+        await updateTournaments(page + 1);
+      }
       return {
         success: true,
         message: 'Tournaments updated successfully',
