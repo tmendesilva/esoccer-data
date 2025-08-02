@@ -1,7 +1,9 @@
 import DT from "datatables.net-dt";
 import DataTable from "datatables.net-react";
+import { useRef } from "react";
 
 export default function Table({ data }) {
+  const table = useRef(null);
   const columnArr = [
     "id",
     "date",
@@ -18,6 +20,7 @@ export default function Table({ data }) {
     name: column,
     data: column,
     className: column,
+    footer: "sum",
   }));
 
   DataTable.use(DT); // Initialize DataTables core
@@ -49,10 +52,46 @@ export default function Table({ data }) {
     }
   };
 
+  const footerCallback = () => {
+    const api = table.current?.dt();
+
+    if (api) {
+      // Iterate through each column to calculate and display averages
+      api.columns().every(function () {
+        const columnIndex = this.index();
+        const columnName = this.name();
+        const columnData = this.data().toArray();
+
+        // Check if the column contains numerical data for averaging
+        // (You might need more robust checks for non-numeric data)
+        if (
+          columnData.length > 0 &&
+          ["player1_score", "player2_score", "scoreTotal"].includes(columnName)
+        ) {
+          const columnDataFiltered = columnData.filter(
+            (data) => !isNaN(parseInt(data))
+          );
+          const sum = columnDataFiltered.reduce(function (a, b) {
+            return parseFloat(a) + parseFloat(b);
+          }, 0);
+
+          const average = sum / columnDataFiltered.length;
+
+          // Update the footer cell for the current column
+          api.column(columnIndex).footer().innerHTML = average.toFixed(2);
+        } else {
+          // For non-numerical columns, you might display an empty string or a different message
+          api.column(columnIndex).footer().innerHTML = "";
+        }
+      });
+    }
+  };
+
   return (
     <div className="Table">
       {data ? (
         <DataTable
+          ref={table}
           columns={columns}
           data={data}
           className="display"
@@ -61,6 +100,7 @@ export default function Table({ data }) {
             select: true,
             order: [{ name: "date", dir: "desc" }],
             rowCallback: customRowCallback,
+            footerCallback: footerCallback,
           }}
         >
           <thead>

@@ -39,9 +39,12 @@ async function fetchData(params) {
     }
 
     if (params['status[]']) {
+      if (!Array.isArray(params['status[]'])) {
+        params['status[]'] = [params['status[]']];
+      }
       filters.$and.push({
         status_id: {
-          $in: params['status[]'].map((s) => Number(s)),
+          $in: params['status[]'].map((s) => parseInt(s)),
         },
       });
     }
@@ -95,7 +98,10 @@ async function fetchData(params) {
         player1_score: match.participant1.score,
         player2: match.participant2.nickname,
         player2_score: match.participant2.score,
-        scoreTotal: match.participant1.score + match.participant2.score,
+        scoreTotal:
+          !isNaN(parseInt(match.participant1.score)) && !isNaN(parseInt(match.participant2.score))
+            ? match.participant1.score + match.participant2.score
+            : null,
       };
     });
   } catch (error) {

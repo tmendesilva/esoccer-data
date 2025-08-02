@@ -1,13 +1,12 @@
-import { addDays, subDays } from 'date-fns';
 import Match from './models/Match.js';
 import Tournament from './models/Tournament.js';
 
-async function updateMatches() {
+async function updateMatches(params) {
   try {
     const tournaments = await Tournament.find({
       start_date: {
-        $gte: subDays(new Date(), 1),
-        $lte: addDays(new Date(), 1),
+        $gte: new Date(params.dateFrom),
+        $lte: new Date(params.dateTo),
       },
       // status_id: {
       //   $lte: 3, // 2: not started, 3: in progress, 4: finished
@@ -19,9 +18,11 @@ async function updateMatches() {
     let bulkOperations = [];
     const promises = tournaments.map(async (tourn) => {
       const url = `${process.env.ESOCCER_API_URL}/tournaments/${tourn.id}/matches`;
+      console.info('Match url:', url);
       await fetch(url)
         .then((res) => res.json())
         .then((matches) => {
+          console.info('Match length:', matches.length);
           bulkOperations = makeBulkOperations(
             bulkOperations,
             matches.map((match) => {

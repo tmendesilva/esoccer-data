@@ -33,7 +33,10 @@ export default function App() {
   async function handlePutRequest(entity) {
     setIsLoading(true);
     await axios
-      .put(`${process.env.REACT_APP_NODE_URL}/update-${entity}`, {})
+      .put(`${process.env.REACT_APP_NODE_URL}/update-${entity}`, {
+        dateFrom: dateRange[0],
+        dateTo: dateRange[1],
+      })
       .then(() => {
         fetchData();
       })

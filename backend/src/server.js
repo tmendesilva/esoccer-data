@@ -9,6 +9,8 @@ import { updateTournaments } from './tournaments.js';
 dotenv.config();
 
 const app = express();
+app.use(express.json());
+
 app.use(function setCommonHeaders(req, res, next) {
   res.set('Access-Control-Allow-Private-Network', 'true');
   next();
@@ -69,7 +71,8 @@ async function startServer() {
 
     app.put('/update-tournaments', async (req, res) => {
       try {
-        const tournaments = await updateTournaments();
+        const body = req.body;
+        const tournaments = await updateTournaments(body);
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(tournaments));
       } catch (err) {
@@ -79,7 +82,8 @@ async function startServer() {
 
     app.put('/update-matches', async (req, res) => {
       try {
-        const matches = await updateMatches();
+        const body = req.body;
+        const matches = await updateMatches(body);
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(matches));
       } catch (err) {

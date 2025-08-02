@@ -2,16 +2,21 @@
 @import "https://code.highcharts.com/dashboards/css/dashboards.css";
 
 #root {
+  width: 1440px;
   max-width: 1440px;
   margin: 0 auto;
   padding: 2rem;
 }
 
 .filters {
+  width: 100%;
   display: flex;
   align-items: center;
   gap: 1rem;
   margin: 1rem 0;
+  > div {
+    flex-basis: 100%;
+  }
 }
 
 .DateRangePicker {
@@ -32,6 +37,9 @@
 }
 
 .dataTable {
+  td {
+    white-space: nowrap;
+  }
   td[class^="player"] {
     color: hsl(0, 0%, 20%);
   }
