@@ -1,6 +1,7 @@
 import DT from "datatables.net-dt";
 import DataTable from "datatables.net-react";
 import { useRef } from "react";
+import { statusOptions } from "./Filters";
 
 export default function Table({ data }) {
   const table = useRef(null);
@@ -8,12 +9,13 @@ export default function Table({ data }) {
     "id",
     "date",
     "location",
-    "status_id",
+    "status",
     "player1",
     "player1_score",
     "player2",
     "player2_score",
-    "scoreTotal",
+    "halfScore",
+    "totalScore",
   ];
 
   const columns = columnArr.map((column) => ({
@@ -26,8 +28,16 @@ export default function Table({ data }) {
   DataTable.use(DT); // Initialize DataTables core
 
   const customRowCallback = (row, data, index) => {
-    const p1Elements = row.querySelectorAll(".player1,.player1_score");
-    const p2Elements = row.querySelectorAll(".player2,.player2_score");
+    const statusEl = row.querySelector(".status");
+    statusEl.style.color = statusOptions().find(
+      (o) => o.value === data.status_id
+    ).color;
+    const p1Elements = row.querySelectorAll(
+      ".player1,.player1_half_score,.player1_score"
+    );
+    const p2Elements = row.querySelectorAll(
+      ".player2,.player2_half_score,.player2_score"
+    );
     if (data.player1_score > data.player2_score) {
       p1Elements.forEach((e) => {
         e.classList.add("win");
@@ -66,7 +76,12 @@ export default function Table({ data }) {
         // (You might need more robust checks for non-numeric data)
         if (
           columnData.length > 0 &&
-          ["player1_score", "player2_score", "scoreTotal"].includes(columnName)
+          [
+            "player1_score",
+            "player2_score",
+            "halfScore",
+            "totalScore",
+          ].includes(columnName)
         ) {
           const columnDataFiltered = columnData.filter(
             (data) => !isNaN(parseInt(data))
@@ -83,6 +98,7 @@ export default function Table({ data }) {
           // For non-numerical columns, you might display an empty string or a different message
           api.column(columnIndex).footer().innerHTML = "";
         }
+        return true;
       });
     }
   };

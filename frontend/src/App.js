@@ -13,22 +13,34 @@ import {
 } from "./components/Filters";
 import Table from "./components/Table";
 
+function startStateFromLocalStorage(stateName, defaultValue = "") {
+  const localData = localStorage.getItem(stateName);
+  return localData ? JSON.parse(localData) : defaultValue;
+}
+
 export default function App() {
   const [data, setData] = useState(null); // State to store fetched data
   const [isLoading, setIsLoading] = useState(true); // State for loading status
   const [error, setError] = useState(null); // State for error handling
 
   // Filters
-  const [dateRange, onChangeDateRange] = useState([
-    new Date(new Date().setHours(0, 0)),
-    new Date(new Date().setHours(23, 59)),
-  ]);
-  const [location, setLocation] = useState("");
-  const [status, setStatus] = useState(
-    statusOptions().filter((o) => o.value !== "1")
+  const [dateRange, onChangeDateRange] = useState(
+    startStateFromLocalStorage("dateRange", [
+      new Date(new Date().setHours(0, 0)),
+      new Date(new Date().setHours(23, 59)),
+    ])
   );
-  const [player1, setPlayer1] = useState("");
-  const [player2, setPlayer2] = useState("");
+  const [location, setLocation] = useState(
+    startStateFromLocalStorage("location")
+  );
+  const [player1, setPlayer1] = useState(startStateFromLocalStorage("player1"));
+  const [player2, setPlayer2] = useState(startStateFromLocalStorage("player2"));
+  const [status, setStatus] = useState(
+    startStateFromLocalStorage(
+      "status",
+      statusOptions().filter((o) => o.value !== 1)
+    )
+  );
 
   async function handlePutRequest(entity) {
     setIsLoading(true);
@@ -58,6 +70,7 @@ export default function App() {
         },
       });
       setData(res.data);
+      localStorage.setItem("dateRange", JSON.stringify(dateRange));
     } catch (err) {
       setError(err);
     } finally {
@@ -113,12 +126,14 @@ export default function App() {
           player={player1}
           setPlayer={setPlayer1}
           location={location}
+          attribute="player1"
         />
         <PlayerFilter
           dateRange={dateRange}
           player={player2}
           setPlayer={setPlayer2}
           location={location}
+          attribute="player2"
         />
         <StatusFilter status={status} setStatus={setStatus} />
       </div>

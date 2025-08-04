@@ -1,29 +1,12 @@
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
+import "highcharts/modules/accessibility";
+import "highcharts/themes/adaptive";
 import { map } from "lodash";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function Charts({ data }) {
   const chartRef = useRef();
-
-  const setSeriesData = useCallback(() => {
-    let seriesData = [];
-    data.forEach((item) => {
-      seriesData.push({
-        y: item.scoreTotal,
-        ...item,
-      });
-    });
-    setChartOptions({
-      series: {
-        data: seriesData,
-      },
-    });
-  }, [data]);
-
-  useEffect(() => {
-    setSeriesData();
-  }, [setSeriesData]);
 
   const [chartOptions, setChartOptions] = useState({
     title: {
@@ -32,53 +15,104 @@ export default function Charts({ data }) {
     accessibility: {
       description: "Total Goals timeline",
     },
-    xAxis: {
-      categories: map(data, "date"),
+    credits: {
+      enabled: false,
     },
-    series: [
-      {
-        name: "Total Goals",
-        data: null,
-        type: "area",
-        lineWidth: 1,
-        animate: true,
-        zones: [
-          {
-            value: 5, // Points with y-value up to 10 will be red
-            color: "blue",
-          },
-          {
-            value: 8, // Points with y-value between 10 and 20 will be blue
-            color: "orange",
-          },
-          {
-            // Points with y-value above 20 will be green (no 'value' means it's the last zone)
-            color: "red",
-          },
-        ],
-      },
-    ],
+    xAxis: {
+      categories: null,
+    },
+    series: null,
     tooltip: {
       pointFormatter: function () {
         return `<span style="color:${this.color}">●</span>${this.series.name}: <b>${this.y}</b><br/>
-        ${this.participant1_nickname}: <b>${this.participant1_score}</b><br/>
-        ${this.participant2_nickname}: <b>${this.participant2_score}</b>`;
+        ${this.player1}: <b>${this.player1_score}</b><br/>
+        ${this.player2}: <b>${this.player2_score}</b>`;
       },
-      backgroundColor: "rgba(255, 255, 255, 0.8)",
-      borderColor: "black",
+      // backgroundColor: "rgba(255, 255, 255, 0.8)",
+      // borderColor: "black",
       borderRadius: 5,
       borderWidth: 1,
       shadow: true,
     },
   });
 
+  const getSerieConfig = (title = null, data = null, isHalf = false) => {
+    return {
+      name: title,
+      data: data,
+      type: "areaspline",
+      lineWidth: 1,
+      animate: true,
+      zones: isHalf
+        ? [
+            {
+              value: 4, // Points with y-value up to X will be red
+              color: "rgba(0, 255, 60, 0.5)",
+            },
+            {
+              // Points with y-value above X will be green (no 'value' means it's the last zone)
+              color: "rgba(255, 145, 0, 5)",
+            },
+          ]
+        : [
+            {
+              value: 5, // Points with y-value up to X will be red
+              color: "rgba(25, 57, 172, 0.5)",
+            },
+            {
+              value: 8, // Points with y-value between X and Y will be blue
+              color: "rgba(255, 242, 0, 0.5)",
+            },
+            {
+              // Points with y-value above Y will be green (no 'value' means it's the last zone)
+              color: "rgba(255, 0, 0, 0.5)",
+            },
+          ],
+    };
+  };
+
+  const setSeriesData = useCallback(() => {
+    setChartOptions({
+      xAxis: {
+        categories: map(data, "date"),
+      },
+      series: [
+        getSerieConfig(
+          "Total Score",
+          data.map((item) => {
+            return {
+              y: item.totalScore,
+              ...item,
+            };
+          })
+        ),
+        getSerieConfig(
+          "Half Score",
+          data.map((item) => {
+            return {
+              y: item.halfScore,
+              ...item,
+            };
+          }),
+          true
+        ),
+      ],
+    });
+  }, [data]);
+
+  useEffect(() => {
+    setSeriesData();
+  }, [setSeriesData]);
+
   return (
-    <div id="container" className="highcharts-dark">
-      <HighchartsReact
-        highcharts={Highcharts}
-        options={chartOptions}
-        ref={chartRef}
-      />
-    </div>
+    <figure className="highcharts-figure">
+      <div id="container" className="highcharts-dark">
+        <HighchartsReact
+          highcharts={Highcharts}
+          options={chartOptions}
+          ref={chartRef}
+        />
+      </div>
+    </figure>
   );
 }

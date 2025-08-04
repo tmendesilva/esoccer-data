@@ -92,13 +92,22 @@ async function fetchData(params) {
           timeZone: 'America/Sao_Paulo',
         }),
         status_id: match.status_id,
+        status: statusOptions().find((s) => s.value === match.status_id).label,
         location_id: match.location?.id || '',
         location: match.location?.name || '',
-        player1: match.participant1.nickname,
+        player1:
+          match.participant1.nickname + ' (' + match.participant1.team?.token_international + ')',
         player1_score: match.participant1.score,
-        player2: match.participant2.nickname,
+        player2:
+          match.participant2.nickname + ' (' + match.participant2.team?.token_international + ')',
         player2_score: match.participant2.score,
-        scoreTotal:
+        halfScore:
+          !isNaN(parseInt(match.participant1.prevPeriodsScores?.[0])) &&
+          !isNaN(parseInt(match.participant2.prevPeriodsScores?.[0]))
+            ? parseInt(match.participant1.prevPeriodsScores[0]) +
+              parseInt(match.participant2.prevPeriodsScores[0])
+            : null,
+        totalScore:
           !isNaN(parseInt(match.participant1.score)) && !isNaN(parseInt(match.participant2.score))
             ? match.participant1.score + match.participant2.score
             : null,
@@ -114,7 +123,7 @@ const fetchLocationsFilter = async (params) => {
     const locations = await Match.distinct('location', {
       date: {
         $gte: new Date(params.dateFrom),
-        $lte: addMinutes(params.dateTo, 16), // add 16 minutes
+        $lte: new Date(params.dateTo),
       },
     });
     return {
@@ -144,6 +153,14 @@ const fecthPlayersFilter = async (params) => {
   } catch (error) {
     console.error('Error:', error);
   }
+};
+
+const statusOptions = () => {
+  return [
+    { value: 1, label: 'Scheduled' },
+    { value: 2, label: 'Playing' },
+    { value: 3, label: 'Finished' },
+  ];
 };
 
 export { fecthPlayersFilter, fetchData, fetchLocationsFilter };

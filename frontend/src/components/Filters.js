@@ -33,6 +33,7 @@ function LocationFilter({ dateRange, location, setLocation }) {
 
   const handleChange = (option) => {
     setLocation(option);
+    localStorage.setItem("location", JSON.stringify(option));
   };
 
   return (
@@ -54,7 +55,7 @@ function LocationFilter({ dateRange, location, setLocation }) {
   );
 }
 
-function PlayerFilter({ dateRange, player, setPlayer, location }) {
+function PlayerFilter({ dateRange, player, setPlayer, location, attribute }) {
   const [players, setPlayers] = useState(null);
 
   const fetchFilters = useCallback(async () => {
@@ -86,6 +87,7 @@ function PlayerFilter({ dateRange, player, setPlayer, location }) {
 
   const handleChange = (option) => {
     setPlayer(option);
+    localStorage.setItem(attribute, JSON.stringify(option));
   };
 
   return (
@@ -109,15 +111,16 @@ function PlayerFilter({ dateRange, player, setPlayer, location }) {
 
 const statusOptions = () => {
   return [
-    { value: "1", label: "Scheduled" },
-    { value: "2", label: "Playing" },
-    { value: "3", label: "Finished" },
+    { value: 1, label: "Scheduled", color: "lightblue" },
+    { value: 2, label: "Playing", color: "yellow" },
+    { value: 3, label: "Finished", color: "lightgreen" },
   ];
 };
 
 function StatusFilter({ status, setStatus }) {
   const handleChange = (option) => {
     setStatus(option);
+    localStorage.setItem("status", JSON.stringify(option));
   };
 
   return (

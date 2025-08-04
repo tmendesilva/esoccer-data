@@ -1,6 +1,17 @@
 import { mongoose } from 'mongoose';
 const { Schema } = mongoose;
 
+const Participant = {
+  id: Number,
+  nickname: String,
+  team: {
+    id: Number,
+    token_international: String,
+  },
+  score: Number,
+  prevPeriodsScores: [Number],
+};
+
 const MatchSchema = new Schema({
   id: Number,
   date: Date,
@@ -11,14 +22,8 @@ const MatchSchema = new Schema({
     id: Number,
     name: String,
   },
-  participant1: {
-    nickname: String,
-    score: Number,
-  },
-  participant2: {
-    nickname: String,
-    score: Number,
-  },
+  participant1: Participant,
+  participant2: Participant,
 });
 
 const Match = mongoose.model('Match', MatchSchema);
