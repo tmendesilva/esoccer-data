@@ -2,7 +2,7 @@ import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import "highcharts/modules/accessibility";
 import "highcharts/themes/adaptive";
-import { map } from "lodash";
+import { map, round } from "lodash";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function Charts({ data }) {
@@ -11,6 +11,20 @@ export default function Charts({ data }) {
   const [chartOptions, setChartOptions] = useState({
     title: {
       text: "Total Goals timeline",
+    },
+    chart: {
+      type: "areaspline",
+    },
+    plotOptions: {
+      areaspline: {
+        // stacking: "normal",
+        lineColor: "#666666",
+        lineWidth: 1,
+        marker: {
+          lineWidth: 1,
+          lineColor: "#666666",
+        },
+      },
     },
     accessibility: {
       description: "Total Goals timeline",
@@ -40,8 +54,6 @@ export default function Charts({ data }) {
     return {
       name: title,
       data: data,
-      type: "areaspline",
-      lineWidth: 1,
       animate: true,
       zones: isHalf
         ? [
@@ -72,30 +84,98 @@ export default function Charts({ data }) {
   };
 
   const setSeriesData = useCallback(() => {
+    const chart = chartRef.current?.chart;
+
+    // Total average
+    const totalScores = map(data, "totalScore");
+    const totalSum = totalScores.reduce((a, b) => a + b, 0);
+    const totalAverage = totalSum / data.length;
+
+    // Half average
+    const halfScores = map(data, "halfScore");
+    const halfSum = halfScores.reduce((a, b) => a + b, 0);
+    const halfAverage = halfSum / data.length;
+
+    console.log("totalAverage", totalAverage);
+    console.log("halfAverage", halfAverage);
+
+    const totalPlotLine = {
+      id: "totalPlotLine",
+      color: "#fff", // Color of the average line
+      value: totalAverage, // The calculated average value
+      width: 1, // Thickness of the line
+      label: {
+        text: "Total Goals Average: " + round(totalAverage, 2), // Optional label for the line
+        style: {
+          fontWeight: "600", // Smaller font size reduces width
+        },
+      },
+      zIndex: 5,
+    };
+
+    const halfPlotLine = {
+      id: "halfPlotLine",
+      color: "#fff", // Color of the average line
+      value: halfAverage, // The calculated average value
+      width: 1, // Thickness of the line
+      label: {
+        text: "HalfTime Goals Average: " + round(halfAverage, 2), // Optional label for the line
+        align: "right", // Horizontal alignment
+        verticalAlign: "bottom", // Vertical alignment
+        style: {
+          fontWeight: "600", // Smaller font size reduces width
+        },
+      },
+      zIndex: 5,
+    };
+
     setChartOptions({
       xAxis: {
         categories: map(data, "date"),
       },
+      yAxis: {
+        plotLines: [totalPlotLine, halfPlotLine],
+      },
       series: [
-        getSerieConfig(
-          "Total Score",
-          data.map((item) => {
-            return {
-              y: item.totalScore,
-              ...item,
-            };
-          })
-        ),
-        getSerieConfig(
-          "Half Score",
-          data.map((item) => {
-            return {
-              y: item.halfScore,
-              ...item,
-            };
-          }),
-          true
-        ),
+        {
+          ...getSerieConfig(
+            "Total Score",
+            data.map((item) => {
+              return {
+                y: item.totalScore,
+                ...item,
+              };
+            })
+          ),
+          events: {
+            show: function () {
+              chart.yAxis[0].addPlotLine(totalPlotLine);
+            },
+            hide: function () {
+              chart.yAxis[0].removePlotLine("totalPlotLine");
+            },
+          },
+        },
+        {
+          ...getSerieConfig(
+            "Half Score",
+            data.map((item) => {
+              return {
+                y: item.halfScore,
+                ...item,
+              };
+            }),
+            true
+          ),
+          events: {
+            show: function () {
+              chart.yAxis[0].addPlotLine(halfPlotLine);
+            },
+            hide: function () {
+              chart.yAxis[0].removePlotLine("halfPlotLine");
+            },
+          },
+        },
       ],
     });
   }, [data]);

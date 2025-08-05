@@ -40,15 +40,15 @@
     white-space: nowrap;
   }
   td[class^="player"] {
-    color: hsl(0, 0%, 20%);
+    color: #fff;
   }
   td.win {
-    background-color: lightgreen;
+    background-color: rgb(144, 238, 144, 0.5);
   }
   td.lose {
-    background-color: lightcoral;
+    background-color: rgb(240, 128, 128, 0.5);
   }
   td.draw {
-    background-color: lightyellow;
+    background-color: hwb(189 54% 1% / 0.497);
   }
 }
