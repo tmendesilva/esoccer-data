@@ -1,5 +1,9 @@
 import Tournament from './models/Tournament.js';
 
+const sleep = (milliseconds) => {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+};
+
 async function updateTournaments(params, page = 1) {
   const url = buildURLQuery(`${process.env.ESOCCER_API_URL}/tournaments`, {
     page: page,
@@ -17,6 +21,7 @@ async function updateTournaments(params, page = 1) {
       console.log('Bulk upsert result:', result);
       if (json.totalPages > page) {
         await updateTournaments(params, page + 1);
+        await sleep(2500); // Wait for the specified delay
       }
       return {
         success: true,

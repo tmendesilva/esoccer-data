@@ -1,10 +1,26 @@
+import "datatables.net-bs5";
 import DT from "datatables.net-dt";
 import DataTable from "datatables.net-react";
-import { useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { statusOptions } from "./Filters";
 
 export default function Table({ data }) {
   const table = useRef(null);
+
+  const [tableData, setTableData] = useState([]);
+
+  const setData = useCallback(() => {
+    setTableData(data);
+    const api = table.current?.dt();
+    if (api) {
+      api.draw();
+    }
+  }, [data]);
+
+  useEffect(() => {
+    setData();
+  }, [setData]);
+
   const columnArr = [
     "id",
     "date",
@@ -52,7 +68,7 @@ export default function Table({ data }) {
       p2Elements.forEach((e) => {
         e.classList.add("win");
       });
-    } else {
+    } else if (data.status_id > 1) {
       p1Elements.forEach((e) => {
         e.classList.add("draw");
       });
@@ -104,13 +120,13 @@ export default function Table({ data }) {
   };
 
   return (
-    <div className="Table">
+    <div className="Table ">
       {data ? (
         <DataTable
           ref={table}
           columns={columns}
-          data={data}
-          className="display"
+          data={tableData}
+          className="table table-bordered table-striped"
           options={{
             responsive: true,
             select: true,

@@ -5,7 +5,7 @@ import "highcharts/themes/adaptive";
 import { map, round } from "lodash";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-export default function Charts({ data }) {
+export default function ChartGoals({ data }) {
   const chartRef = useRef();
 
   const [chartOptions, setChartOptions] = useState({
@@ -96,14 +96,12 @@ export default function Charts({ data }) {
     const halfSum = halfScores.reduce((a, b) => a + b, 0);
     const halfAverage = halfSum / data.length;
 
-    console.log("totalAverage", totalAverage);
-    console.log("halfAverage", halfAverage);
-
     const totalPlotLine = {
       id: "totalPlotLine",
       color: "#fff", // Color of the average line
       value: totalAverage, // The calculated average value
       width: 1, // Thickness of the line
+      dashStyle: "dash",
       label: {
         text: "Total Goals Average: " + round(totalAverage, 2), // Optional label for the line
         style: {
@@ -118,6 +116,7 @@ export default function Charts({ data }) {
       color: "#fff", // Color of the average line
       value: halfAverage, // The calculated average value
       width: 1, // Thickness of the line
+      dashStyle: "dot",
       label: {
         text: "HalfTime Goals Average: " + round(halfAverage, 2), // Optional label for the line
         align: "right", // Horizontal alignment
@@ -178,6 +177,7 @@ export default function Charts({ data }) {
         },
       ],
     });
+    chart.redraw();
   }, [data]);
 
   useEffect(() => {

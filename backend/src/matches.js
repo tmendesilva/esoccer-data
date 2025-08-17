@@ -1,6 +1,10 @@
 import Match from './models/Match.js';
 import Tournament from './models/Tournament.js';
 
+const sleep = (milliseconds) => {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+};
+
 async function updateMatches(params) {
   try {
     const tournaments = await Tournament.find({
@@ -39,6 +43,7 @@ async function updateMatches(params) {
         .catch((err) => {
           console.error('Error:', err);
         });
+      await sleep(2500); // Wait for the specified delay
     });
 
     await Promise.all(promises);

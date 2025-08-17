@@ -20,7 +20,9 @@
     "loadsh": "^0.0.4",
     "mongoose": "^8.16.5",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "swagger-autogen": "^2.23.7",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "prettier": "^3.6.2"

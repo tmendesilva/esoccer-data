@@ -4,7 +4,8 @@ import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 import "react-calendar/dist/Calendar.css";
 import "./App.css";
-import Charts from "./components/Charts";
+import ChartGoals from "./components/ChartGoals";
+import ChartPercentage from "./components/ChartPercentage";
 import {
   LocationFilter,
   PlayerFilter,
@@ -20,6 +21,7 @@ function startStateFromLocalStorage(stateName, defaultValue = "") {
 
 export default function App() {
   const [data, setData] = useState(null); // State to store fetched data
+  const [chartData, setChartData] = useState(null); // State to store fetched data
   const [isLoading, setIsLoading] = useState(true); // State for loading status
   const [error, setError] = useState(null); // State for error handling
 
@@ -48,6 +50,7 @@ export default function App() {
       .put(`${process.env.REACT_APP_NODE_URL}/update-${entity}`, {
         dateFrom: dateRange[0],
         dateTo: dateRange[1],
+        location: location?.value,
       })
       .then(() => {
         fetchData();
@@ -69,7 +72,9 @@ export default function App() {
           status: status.map((s) => s.value),
         },
       });
+
       setData(res.data);
+      setChartData(res.data.filter((m) => m.status_id >= 2));
       localStorage.setItem("dateRange", JSON.stringify(dateRange));
     } catch (err) {
       setError(err);
@@ -79,6 +84,7 @@ export default function App() {
   }, [
     dateRange,
     setData,
+    setChartData,
     setError,
     setIsLoading,
     location,
@@ -102,9 +108,6 @@ export default function App() {
   return (
     <div className="App">
       <h2>Esoccer Data:</h2>
-      <button onClick={() => handlePutRequest("tournaments")}>
-        Update Tournaments
-      </button>{" "}
       <button onClick={() => handlePutRequest("matches")}>
         Update Matches
       </button>
@@ -138,7 +141,12 @@ export default function App() {
         <StatusFilter status={status} setStatus={setStatus} />
       </div>
       <Table data={data || []} />
-      <Charts data={data || []} />
+      <ChartPercentage
+        data={chartData || []}
+        player1={player1}
+        player2={player2}
+      />
+      <ChartGoals data={chartData || []} />
     </div>
   );
 }

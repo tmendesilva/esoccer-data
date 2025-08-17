@@ -22,7 +22,6 @@ const corsOptions = {
   exposedHeaders: ['Access-Control-Allow-Private-Network'],
   methods: ['GET', 'POST', 'PUT'],
 };
-
 app.use(cors(corsOptions)); // Apply custom CORS options globally
 
 const errorHandling = (err) => {
@@ -83,9 +82,10 @@ async function startServer() {
     app.put('/update-matches', async (req, res) => {
       try {
         const body = req.body;
+        const tournaments = await updateTournaments(body);
         const matches = await updateMatches(body);
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify(matches));
+        res.end(JSON.stringify([tournaments, matches]));
       } catch (err) {
         errorHandling(err);
       }

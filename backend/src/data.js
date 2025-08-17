@@ -1,7 +1,7 @@
-import { addMinutes, format } from 'date-fns';
+import { format } from 'date-fns';
 import lodash from 'lodash';
 import Match from './models/Match.js';
-const { uniq } = lodash;
+const { uniq, sortedUniq } = lodash;
 
 const flattenObject = (obj, prefix = '', result = {}) => {
   for (const key in obj) {
@@ -95,11 +95,9 @@ async function fetchData(params) {
         status: statusOptions().find((s) => s.value === match.status_id).label,
         location_id: match.location?.id || '',
         location: match.location?.name || '',
-        player1:
-          match.participant1.nickname + ' (' + match.participant1.team?.token_international + ')',
+        player1: match.participant1.nickname,
         player1_score: match.participant1.score,
-        player2:
-          match.participant2.nickname + ' (' + match.participant2.team?.token_international + ')',
+        player2: match.participant2.nickname,
         player2_score: match.participant2.score,
         halfScore:
           !isNaN(parseInt(match.participant1.prevPeriodsScores?.[0])) &&
@@ -139,16 +137,18 @@ const fecthPlayersFilter = async (params) => {
     let filters = {
       date: {
         $gte: new Date(params.dateFrom),
-        $lte: addMinutes(params.dateTo, 16), // add 16 minutes
+        $lte: new Date(params.dateTo),
       },
     };
     if (params.location) {
-      filters['location.id'] = params.location;
+      filters['location.id'] = parseInt(params.location);
     }
     const player1 = await Match.distinct('participant1.nickname', filters);
     const player2 = await Match.distinct('participant2.nickname', filters);
     return {
-      players: uniq([...player1, ...player2]),
+      players: sortedUniq(
+        [...player1, ...player2].sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' })),
+      ),
     };
   } catch (error) {
     console.error('Error:', error);

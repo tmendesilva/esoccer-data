@@ -1,0 +1,22 @@
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Soccer Ball -->
+  <circle cx="8" cy="8" r="7" fill="#8bc34a" stroke="#333" stroke-width="1.5"/>
+  
+  <!-- Panels -->
+  <path d="M8 4a4 4 0 0 1 4 4h0a4 4 0 0 1-4 4 4 4 0 0 1-4-4 4 4 0 0 1 4-4z" fill="#3e8e41" opacity="0.7"/>
+  <path d="M8 12a4 4 0 0 0 4-4h0a4 4 0 0 0-4-4 4 4 0 0 0-4 4 4 4 0 0 0 4 4z" fill="#2ecc71" opacity="0.7"/>
+  
+  <!-- Laces -->
+  <path d="M6 6h4v4h-4z" fill="#333" stroke="#333" stroke-width="1"/>
+  <path d="M8 4h4v4h-4z" fill="#333" stroke="#333" stroke-width="1"/>
+  <path d="M10 6h-4v4h4z" fill="#333" stroke="#333" stroke-width="1"/>
+  
+  <!-- Shadows -->
+  <path d="M8 4a4 4 0 0 1 4 4h0a4 4 0 0 1-4 4 4 4 0 0 1-4-4 4 4 0 0 1 4-4z" fill="#333" opacity="0.2"/>
+  <path d="M8 12a4 4 0 0 0 4-4h0a4 4 0 0 0-4-4 4 4 0 0 0-4 4 4 4 0 0 0 4 4z" fill="#333" opacity="0.2"/>
+  
+  <!-- Highlights -->
+  <path d="M6 6h4v4h-4z" fill="#fff" opacity="0.8"/>
+  <path d="M8 4h4v4h-4z" fill="#fff" opacity="0.8"/>
+  <path d="M10 6h-4v4h4z" fill="#fff" opacity="0.8"/>
+</svg>
